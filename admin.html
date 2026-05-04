@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>訂單統計</title>
+</head>
+<body>
+
+<h2>📊 訂單統計</h2>
+<pre id="out"></pre>
+
+<script>
+fetch("👉同一個Google網址")
+.then(r=>r.json())
+.then(data=>{
+  let total={};
+  data.forEach(o=>{
+    for(let k in o.order){
+      if(!total[k]) total[k]=0;
+      total[k]+=o.order[k].qty;
+    }
+  });
+  document.getElementById("out").innerText=
+    JSON.stringify(total,null,2);
+});
+</script>
+
+</body>
+</html>
