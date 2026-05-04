@@ -2,27 +2,51 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>訂單統計</title>
+<title>訂單後台</title>
 </head>
 <body>
 
-<h2>📊 訂單統計</h2>
+<h2>📊 訂單後台</h2>
 <pre id="out"></pre>
 
 <script>
-fetch("https://script.google.com/macros/s/AKfycbxjeBKFxNUQEqcWuLCFusDIl3nsrf7idbEUMVuEzS2Lml7gIL6nV_qUkt_7OcJhcWxGqQ/exec")
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyhGeEvt4MYtzdnwrtug8HRpHjOJ-Lnds3m2W4RNkbfq4d5ctd9pM-ivUMRw0y7QynN/exec";
+
+fetch(GAS_URL)
 .then(r=>r.json())
 .then(data=>{
-  let total={};
+
+  let total = {};
+  let text = "";
+
   data.forEach(o=>{
+
+    text += `👤 ${o.user} (${o.time})\n`;
+
     for(let k in o.order){
+      let qty = o.order[k].qty || 0;
+      let price = o.order[k].price || 0;
+
+      text += `  - ${k} x${qty} = $${qty*price}\n`;
+
       if(!total[k]) total[k]=0;
-      total[k]+=o.order[k].qty;
+      total[k]+=qty;
     }
+
+    text += "\n";
   });
-  document.getElementById("out").innerText=
-    JSON.stringify(total,null,2);
+
+  text += "====================\n📦 總統計：\n";
+
+  for(let k in total){
+    text += `${k}：${total[k]} 份\n`;
+  }
+
+  document.getElementById("out").innerText = text;
+
 });
+
 </script>
 
 </body>
