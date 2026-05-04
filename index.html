@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>點餐系統</title>
+
 <style>
 body{font-family:sans-serif;background:#fff5f7;padding:15px}
 .card{background:#fff;border-radius:15px;padding:12px;margin-bottom:12px;box-shadow:0 3px 8px rgba(0,0,0,0.1)}
@@ -11,32 +12,39 @@ body{font-family:sans-serif;background:#fff5f7;padding:15px}
 .qty{display:flex;align-items:center}
 button{background:#ff8fab;border:none;color:#fff;padding:5px 10px;border-radius:8px;margin:0 3px}
 .total{text-align:right;margin-top:10px;font-size:18px}
-.submit{width:100%;padding:12px;margin-top:15px}
+.submit{width:100%;padding:12px;margin-top:15px;background:#ff4d6d;color:#fff;border:none;border-radius:10px}
 </style>
 </head>
 
 <body>
-<h2>🍱 點餐</h2>
+
+<h2>🍱 點餐系統</h2>
 
 <div class="card">
 姓名：<input id="name">
 </div>
 
 <div id="menu"></div>
+
 <div class="total">總金額：$<span id="total">0</span></div>
+
 <button class="submit" onclick="submitOrder()">送出訂單</button>
 
 <script>
 let order = {};
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyhGeEvt4MYtzdnwrtug8HRpHjOJ-Lnds3m2W4RNkbfq4d5ctd9pM-ivUMRw0y7QynN/exec";
 
 fetch("menu.json")
-.then(res=>res.json())
+.then(r=>r.json())
 .then(data=>{
   let html="";
+
   for(let cat in data){
     html+=`<div class="card"><h3>${cat}</h3>`;
+
     data[cat].forEach(item=>{
-      let key=item.name+(item.type||"");
+      let key = item.name + (item.type||"");
+
       html+=`
       <div class="item">
         <div>${item.name}${item.type?"("+item.type+")":""} $${item.price}</div>
@@ -47,33 +55,43 @@ fetch("menu.json")
         </div>
       </div>`;
     });
+
     html+="</div>";
   }
+
   document.getElementById("menu").innerHTML=html;
 });
 
 function chg(n,p,d){
-  if(!order[n])order[n]={qty:0,price:p};
-  order[n].qty+=d;
-  if(order[n].qty<0)order[n].qty=0;
+  if(!order[n]) order[n]={qty:0,price:p};
+  order[n].qty += d;
+  if(order[n].qty<0) order[n].qty=0;
   document.getElementById(n).innerText=order[n].qty;
   upd();
 }
 
 function upd(){
   let t=0;
-  for(let k in order)t+=order[k].qty*order[k].price;
+  for(let k in order){
+    t += order[k].qty * order[k].price;
+  }
   document.getElementById("total").innerText=t;
 }
 
 function submitOrder(){
-  let user=document.getElementById("name").value;
-  fetch("https://script.google.com/macros/s/AKfycbxjeBKFxNUQEqcWuLCFusDIl3nsrf7idbEUMVuEzS2Lml7gIL6nV_qUkt_7OcJhcWxGqQ/exec",{
+  let user = document.getElementById("name").value;
+
+  fetch(GAS_URL,{
     method:"POST",
-    body:JSON.stringify({user,order})
+    body: JSON.stringify({
+      user,
+      order
+    })
   });
-  alert("完成！");
+
+  alert("訂單已送出！");
 }
 </script>
+
 </body>
 </html>
